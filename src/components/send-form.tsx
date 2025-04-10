@@ -26,8 +26,8 @@ import {
 } from '../lib/ledger';
 import AddressText from '../components/address-text';
 import { useForm } from '@mantine/form';
-import { kasToSompi, sompiToKas, NETWORK_UTXO_LIMIT } from '../lib/kaspa-util';
-import { IMempoolEntry } from '../lib/kaspa-rpc';
+import { cytxToSompi, sompiToCytx, NETWORK_UTXO_LIMIT } from '../lib/cryptix-util';
+import { IMempoolEntry } from '../lib/cryptix-rpc';
 // import { IconAlertCircle } from '@tabler/icons-react';
 
 interface SendFormProps {
@@ -70,7 +70,7 @@ export default function SendForm(props: SendFormProps) {
                 form.values.manualFee && value < minimumFee
                     ? 'Fee must be at least ' + minimumFee
                     : null,
-            sendTo: (value) => (!/^kaspa\:[a-z0-9]{61,63}$/.test(value) ? 'Invalid address' : null),
+            sendTo: (value) => (!/^cryptix\:[a-z0-9]{61,63}$/.test(value) ? 'Invalid address' : null),
         },
         validateInputOnBlur: true,
     });
@@ -119,11 +119,11 @@ export default function SendForm(props: SendFormProps) {
             form.setValues({
                 sendTo: props.mempoolEntryToReplace.transaction.outputs[0].verboseData
                     .scriptPublicKeyAddress,
-                amount: sompiToKas(
+                amount: sompiToCytx(
                     Number(props.mempoolEntryToReplace.transaction.outputs[0].value),
                 ),
                 manualFee: true,
-                fee: sompiToKas(Number(props.mempoolEntryToReplace.fee)),
+                fee: sompiToCytx(Number(props.mempoolEntryToReplace.fee)),
             });
         }
     }, [props.mempoolEntryToReplace]);
@@ -184,13 +184,13 @@ export default function SendForm(props: SendFormProps) {
         } else if (deviceType == 'usb') {
             try {
                 const { tx } = createTransaction(
-                    kasToSompi(Number(form.values.amount)),
+                    cytxToSompi(Number(form.values.amount)),
                     form.values.sendTo,
                     selectedUtxos,
                     props.addressContext.derivationPath,
                     props.addressContext.address,
                     form.values.includeFeeInAmount,
-                    kasToSompi(form.values.fee),
+                    cytxToSompi(form.values.fee),
                 );
 
                 const result: SendAmountResult = await sendAmount(
@@ -205,7 +205,7 @@ export default function SendForm(props: SendFormProps) {
 
                 if (e.statusCode == 0xb005 && props.addressContext.utxos.length > 15) {
                     // This is probably a Nano S
-                    const maxCompoundableAmount = sompiToKas(
+                    const maxCompoundableAmount = sompiToCytx(
                         props.addressContext.utxos.slice(0, 15).reduce((acc, utxo) => {
                             return acc + utxo.amount;
                         }, 0),
@@ -213,7 +213,7 @@ export default function SendForm(props: SendFormProps) {
                     notifications.show({
                         title: 'Error',
                         color: 'red',
-                        message: `You have too many UTXOs to send this amount. Please compound first by sending KAS to your address. Maximum sendable without compounding (including fee): ${maxCompoundableAmount}`,
+                        message: `You have too many UTXOs to send this amount. Please compound first by sending CYTX to your address. Maximum sendable without compounding (including fee): ${maxCompoundableAmount}`,
                         autoClose: false,
                         loading: false,
                     });
@@ -246,14 +246,14 @@ export default function SendForm(props: SendFormProps) {
                 fee: feeCalcResult,
                 total: utxoTotalAmount,
             } = selectUtxos(
-                kasToSompi(amount),
+                cytxToSompi(amount),
                 props.addressContext.utxos,
                 includeFeeInAmount,
-                kasToSompi(requiredFee),
+                cytxToSompi(requiredFee),
             );
 
             if (utxos.length > NETWORK_UTXO_LIMIT) {
-                const maxCompoundableAmount = sompiToKas(
+                const maxCompoundableAmount = sompiToCytx(
                     utxos.slice(0, NETWORK_UTXO_LIMIT).reduce((acc, utxo) => {
                         return acc + utxo.amount;
                     }, 0),
@@ -261,27 +261,27 @@ export default function SendForm(props: SendFormProps) {
                 notifications.show({
                     title: 'Error',
                     color: 'red',
-                    message: `You have too many UTXOs to send this amount. Please compound first by sending KAS to your address. Maximum sendable without compounding (including fee): ${maxCompoundableAmount}`,
+                    message: `You have too many UTXOs to send this amount. Please compound first by sending CYTX to your address. Maximum sendable without compounding (including fee): ${maxCompoundableAmount}`,
                     autoClose: false,
                     loading: false,
                 });
                 setCanSendAmount(false);
             } else if (hasEnough) {
-                let changeAmount = utxoTotalAmount - kasToSompi(amount);
+                let changeAmount = utxoTotalAmount - cytxToSompi(amount);
                 if (!includeFeeInAmount) {
                     changeAmount -= feeCalcResult;
                 }
 
                 let expectedFee = feeCalcResult;
-                // The change is added to the fee if it's less than 0.0001 KAS
+                // The change is added to the fee if it's less than 0.0001 CYTX
                 console.info('changeAmount', changeAmount);
                 if (changeAmount < 10000) {
                     console.info(`Adding dust change ${changeAmount} sompi to fee`);
                     expectedFee += changeAmount;
                 }
 
-                calculatedFee = sompiToKas(expectedFee);
-                const afterFeeDisplay = sompiToKas(kasToSompi(amount) - expectedFee);
+                calculatedFee = sompiToCytx(expectedFee);
+                const afterFeeDisplay = sompiToCytx(cytxToSompi(amount) - expectedFee);
                 setCanSendAmount(true);
                 setSelectedUtxos(utxos);
                 if (includeFeeInAmount) {
@@ -312,7 +312,7 @@ export default function SendForm(props: SendFormProps) {
         }, 0);
 
         form.setValues({
-            amount: sompiToKas(total),
+            amount: sompiToCytx(total),
             includeFeeInAmount: true,
         });
     };
@@ -329,7 +329,7 @@ export default function SendForm(props: SendFormProps) {
                 />
 
                 <NumberInput
-                    label='Amount in KAS'
+                    label='Amount in CYTX'
                     placeholder='0'
                     min={0}
                     decimalScale={8}
@@ -411,7 +411,7 @@ export default function SendForm(props: SendFormProps) {
                     <Text fw={600}>Transaction ID</Text>
 
                     <Anchor
-                        href={`https://explorer.kaspa.org/txs/${form.values.sentTxId}`}
+                        href={`https://explorer.cryptix.org/txs/${form.values.sentTxId}`}
                         target='_blank'
                         c='brand'
                         w={'calc(var(--modal-size) - 6rem)'}
@@ -421,7 +421,7 @@ export default function SendForm(props: SendFormProps) {
                     </Anchor>
 
                     <Text component='h2' fw={600}>
-                        {form.values.sentAmount} KAS
+                        {form.values.sentAmount} CYTX
                     </Text>
 
                     <Text>sent to</Text>

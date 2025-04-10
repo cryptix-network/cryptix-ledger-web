@@ -9,7 +9,7 @@ import { Notifications } from '@mantine/notifications';
 // const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-    title: 'KasVault',
+    title: 'CytxVault',
     description: 'The frontend interface for your Ledger device',
 };
 
@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
         <html lang='en'>
             <head>
                 <ColorSchemeScript />
-                <link rel='shortcut icon' href='/favicon.svg' />
+                <link rel='shortcut icon' href='/favicon.ico' />
             </head>
             <body>
                 <MantineProvider

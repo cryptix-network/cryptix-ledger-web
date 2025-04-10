@@ -1,17 +1,17 @@
 {
-    "short_name": "KasVault",
-    "name": "KasVault",
+    "short_name": "CytxVault",
+    "name": "CytxVault",
     "icons": [
         {
-            "src": "favicon.svg",
+            "src": "favicon.ico",
             "sizes": "any"
         },
         {
-            "src": "kasvault-full-stk.svg",
+            "src": "cryptix-icon.png",
             "sizes": "any"
         },
         {
-            "src": "kaspa-icon.svg",
+            "src": "cryptix-icon.png",
             "sizes": "any"
         }
     ],

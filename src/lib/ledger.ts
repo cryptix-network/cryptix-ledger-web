@@ -2,13 +2,13 @@ import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
 
-import { publicKeyToAddress, addressToScriptPublicKey } from './kaspa-util';
+import { publicKeyToAddress, addressToScriptPublicKey } from './cryptix-util';
 
-import { TransactionInput, TransactionOutput, Transaction } from 'hw-app-kaspa';
-import Kaspa from 'hw-app-kaspa';
+import { TransactionInput, TransactionOutput, Transaction } from 'hw-app-cryptix';
+import Cryptix from 'hw-app-cryptix';
 
-import * as kaspa from './kaspa-rpc';
-import kaspaWasmUrl from './kaspa-rpc/kaspa_bg.wasm';
+import * as cryptix from './cryptix-rpc';
+import cryptixWasmUrl from './cryptix-rpc/cryptix_bg.wasm';
 
 axiosRetry(axios, { retries: 3 });
 
@@ -21,14 +21,14 @@ let transportState = {
     type: null,
 };
 
-const kaspaState = {
+const cryptixState = {
     rpc: null,
     sdk: new Promise((resolve, reject) => {
-        kaspa
-            .default(kaspaWasmUrl)
+        cryptix
+            .default(cryptixWasmUrl)
             .then(() => {
-                console.info('SDK version', kaspa.version());
-                resolve(kaspa);
+                console.info('SDK version', cryptix.version());
+                resolve(cryptix);
             })
             .catch((e) => {
                 console.error(e);
@@ -40,15 +40,15 @@ const kaspaState = {
 
 /**
  * Lazy initializes the RPC client
- * @returns Promise<kaspa.RpcClient>
+ * @returns Promise<cryptix.RpcClient>
  */
-async function rpc(): Promise<kaspa.RpcClient> {
-    if (!kaspaState.rpc) {
-        kaspaState.rpc = new Promise(async (resolve) => {
-            await kaspaState.sdk;
+async function rpc(): Promise<cryptix.RpcClient> {
+    if (!cryptixState.rpc) {
+        cryptixState.rpc = new Promise(async (resolve) => {
+            await cryptixState.sdk;
 
-            const client = new kaspa.RpcClient({
-                resolver: new kaspa.Resolver(),
+            const client = new cryptix.RpcClient({
+                resolver: new cryptix.Resolver(),
                 networkId: 'mainnet',
             });
 
@@ -58,11 +58,11 @@ async function rpc(): Promise<kaspa.RpcClient> {
         });
     }
 
-    return kaspaState.rpc;
+    return cryptixState.rpc;
 }
 
 // export async function fetchTransaction(transactionId: string) {
-//     const { data: txData } = await axios.get(`https://api.kaspa.org/transactions/${transactionId}`);
+//     const { data: txData } = await axios.get(`https://api.cryptix.org/transactions/${transactionId}`);
 
 //     return txData;
 // }
@@ -90,11 +90,11 @@ export function selectUtxos(
     requiredFee: number = 0,
 ): UtxoSelectionResult {
     // Fee does not have to be accurate. It just has to be over the absolute minimum.
-    // https://kaspa-mdbook.aspectron.com/transactions/constraints/fees.html
+    // https://cryptix-mdbook.aspectron.com/transactions/constraints/fees.html
     // Fee = (total mass) x (min_relay_tx_fee) / 1000
     // Since min_relay_tx_fee == 1000, really it's just:
     // Fee = total mass
-    // https://kaspa-mdbook.aspectron.com/transactions/constraints/size.html
+    // https://cryptix-mdbook.aspectron.com/transactions/constraints/size.html
     // 239 mass = 2 (version) + 8 (# inputs) + 8 (# outputs)
     //          + 8 (lock time) + 20 (subnetwork id) + 8 (gas)
     //          + 32 (payload hash) + 8 (payload len) + 32 (payload)
@@ -102,7 +102,7 @@ export function selectUtxos(
     //               8 (value) + 2 (out version) + 8 (script len) + 35 (script) + 8 (if we're sending to multisig (2 sigops)) // output1 = 61
     //             + 8 (value) + 2 (out version) + 8 (script len) + 34 (script) // output2 = 52
     //            ]
-    // https://kaspa-mdbook.aspectron.com/transactions/constraints/mass.html#transaction-mass-limits
+    // https://cryptix-mdbook.aspectron.com/transactions/constraints/mass.html#transaction-mass-limits
     // 690 mass = [35 output1 script len + 34 output2 script len] x 10   // 10 = mass_per_script_pub_key_byte
     // If there is only one output, Fee calculation will be over by close to 0.00000500
     // Otherwise, it will only be off by about 0.00000020. These overages in both cases are tolerable
@@ -119,7 +119,7 @@ export function selectUtxos(
 
     // UTXOs is sorted descending:
     for (const utxo of utxosInput) {
-        minimumFee += 1118; // 1118 is described here https://kaspa-mdbook.aspectron.com/transactions/constraints/mass.html#input-mass
+        minimumFee += 1118; // 1118 is described here https://cryptix-mdbook.aspectron.com/transactions/constraints/mass.html#input-mass
         total += utxo.amount;
 
         fee = Math.max(minimumFee, requiredFee);
@@ -165,7 +165,7 @@ export async function initTransport(type = 'usb') {
 
 export async function fetchTransactionCount(address) {
     const { data: txCount } = await axios.get(
-        `https://api.kaspa.org/addresses/${address}/transactions-count`,
+        `https://api.cryptix.org/addresses/${address}/transactions-count`,
     );
 
     return txCount.total || 0;
@@ -238,7 +238,7 @@ export async function fetchFeeRate() {
 
 export async function fetchTransactions(address, offset = 0, limit = 100) {
     const { data: txsData } = await axios.get(
-        `https://api.kaspa.org/addresses/${address}/full-transactions?offset=${offset}&limit=${limit}&resolve_previous_outpoints=light`,
+        `https://api.cryptix.org/addresses/${address}/full-transactions?offset=${offset}&limit=${limit}&resolve_previous_outpoints=light`,
     );
 
     return txsData;
@@ -291,9 +291,9 @@ export async function getAddress(path = "44'/111111'/0'/0/0", display = false) {
         throw new Error('Ledger not connected');
     }
 
-    const kaspa = new Kaspa(transportState.transport);
+    const cryptix = new Cryptix(transportState.transport);
 
-    const publicKeyBuffer = await kaspa.getPublicKey(path, display);
+    const publicKeyBuffer = await cryptix.getPublicKey(path, display);
 
     // Index 0 is always 0x41 = (65) the length of the following full public key
     const publicKey = Buffer.from(publicKeyBuffer.subarray(1, 66));
@@ -310,9 +310,9 @@ export async function getAddress(path = "44'/111111'/0'/0/0", display = false) {
     };
 }
 
-function toRpcTransaction(signedTx: Transaction): kaspa.Transaction {
+function toRpcTransaction(signedTx: Transaction): cryptix.Transaction {
     const inputs = signedTx.inputs.map((currInput: TransactionInput) => {
-        return new kaspa.TransactionInput({
+        return new cryptix.TransactionInput({
             signatureScript: `41${currInput.signature}01`,
             previousOutpoint: {
                 index: currInput.outpointIndex,
@@ -324,13 +324,13 @@ function toRpcTransaction(signedTx: Transaction): kaspa.Transaction {
     });
 
     const outputs = signedTx.outputs.map((currOutput: TransactionOutput) => {
-        return new kaspa.TransactionOutput(
+        return new cryptix.TransactionOutput(
             BigInt(currOutput.value),
-            new kaspa.ScriptPublicKey(0, currOutput.scriptPublicKey),
+            new cryptix.ScriptPublicKey(0, currOutput.scriptPublicKey),
         );
     });
 
-    return new kaspa.Transaction({
+    return new cryptix.Transaction({
         inputs,
         outputs,
         gas: BigInt(0),
@@ -347,7 +347,7 @@ export const sendTransaction = async (
 ): Promise<SendAmountResult> => {
     const client = await rpc();
     const wasmTx = toRpcTransaction(signedTx);
-    const submitRequest: kaspa.ISubmitTransactionRequest = {
+    const submitRequest: cryptix.ISubmitTransactionRequest = {
         transaction: wasmTx,
     };
 
@@ -414,7 +414,7 @@ export function createTransaction(
     console.info(utxos);
 
     if (!hasEnough) {
-        // Show error we don't have enough KAS
+        // Show error we don't have enough CYTX
         throw new Error('Amount too high.');
     }
 
@@ -484,8 +484,8 @@ export async function sendAmount(
     txIdToReplace?: string,
 ): Promise<SendAmountResult> {
     const transport = await initTransport(deviceType);
-    const kaspa = new Kaspa(transport);
-    await kaspa.signTransaction(tx);
+    const cryptix = new Cryptix(transport);
+    await cryptix.signTransaction(tx);
 
     console.info('tx', tx);
 
@@ -502,8 +502,8 @@ export async function sendAmount(
  */
 export async function signMessage(message, addressType, addressIndex, deviceType) {
     const transport = await initTransport(deviceType);
-    const kaspa = new Kaspa(transport);
-    return await kaspa.signMessage(message, addressType, addressIndex);
+    const cryptix = new Cryptix(transport);
+    return await cryptix.signMessage(message, addressType, addressIndex);
 }
 
 export async function fetchServerInfo() {
@@ -515,7 +515,7 @@ export async function fetchServerInfo() {
 export async function fetchBlock(
     hash: string,
     includeTransactions: boolean,
-): Promise<kaspa.IGetBlockResponse> {
+): Promise<cryptix.IGetBlockResponse> {
     const client = await rpc();
     return await client.getBlock({ hash, includeTransactions });
 }

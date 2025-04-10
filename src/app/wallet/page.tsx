@@ -16,14 +16,14 @@ import TransactionsTab from './transactions-tab';
 import { LockedDeviceError } from '@ledgerhq/errors';
 import sha256 from 'crypto-js/sha256';
 
-import KaspaBIP32 from '../../lib/bip32';
+import CryptixBIP32 from '../../lib/bip32';
 import { delay } from '../../lib/util';
 
 import { useElementSize } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import SettingsStore from '../../lib/settings-store';
-import { kasToSompi, sompiToKas, NETWORK_UTXO_LIMIT } from '../../lib/kaspa-util';
-import { IMempoolEntry } from '../../lib/kaspa-rpc/kaspa';
+import { cytxToSompi, sompiToCytx, NETWORK_UTXO_LIMIT } from '../../lib/cryptix-util';
+import { IMempoolEntry } from '../../lib/cryptix-rpc/cryptix';
 import { IAddressData, ISelectedAddress } from './types';
 
 let loadingAddressBatch = false;
@@ -43,7 +43,7 @@ function loadAddressDetails(rawAddress) {
     const fetchAddressPromise = fetchAddressDetails(rawAddress.address, rawAddress.derivationPath);
 
     return fetchAddressPromise.then((addressDetails) => {
-        rawAddress.balance = sompiToKas(Number(addressDetails.balance));
+        rawAddress.balance = sompiToCytx(Number(addressDetails.balance));
         rawAddress.utxos = addressDetails.utxos;
         // rawAddress.txCount = addressDetails.txCount;
         rawAddress.loading = false;
@@ -221,14 +221,14 @@ async function demoLoadAddress(bip32, setAddresses, setRawAddresses, lastReceive
         currAddress.utxos.push({
             prevTxId: 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
             outpointIndex: 0,
-            amount: kasToSompi(balance - (NETWORK_UTXO_LIMIT - 1)),
+            amount: cytxToSompi(balance - (NETWORK_UTXO_LIMIT - 1)),
         });
 
         for (let j = 0; j < NETWORK_UTXO_LIMIT - 1; j++) {
             currAddress.utxos.push({
                 prevTxId: 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
                 outpointIndex: 0,
-                amount: kasToSompi(1),
+                amount: cytxToSompi(1),
             });
         }
 
@@ -274,7 +274,7 @@ export default function Dashboard() {
     const [selectedAddress, setSelectedAddress] = useState<ISelectedAddress | null>(null);
     const [activeTab, setActiveTab] = useState('addresses');
     const [isTransportInitialized, setTransportInitialized] = useState(false);
-    const [bip32base, setBIP32Base] = useState<KaspaBIP32>();
+    const [bip32base, setBIP32Base] = useState<CryptixBIP32>();
     const [userSettings, setUserSettings] = useState<SettingsStore>();
     const [enableGenerate, setEnableGenerate] = useState(false);
     const [mempoolEntryToReplace, setMempoolEntryToReplace] = useState<IMempoolEntry | null>(null);
@@ -370,7 +370,7 @@ export default function Dashboard() {
         if (deviceType === 'demo') {
             setTransportInitialized(true);
             const xpub = getDemoXPub();
-            setBIP32Base(new KaspaBIP32(xpub.compressedPublicKey, xpub.chainCode));
+            setBIP32Base(new CryptixBIP32(xpub.compressedPublicKey, xpub.chainCode));
             return () => {};
         }
 
@@ -382,7 +382,7 @@ export default function Dashboard() {
                     setTransportInitialized(true);
 
                     return getXPubFromLedger().then((xpub) =>
-                        setBIP32Base(new KaspaBIP32(xpub.compressedPublicKey, xpub.chainCode)),
+                        setBIP32Base(new CryptixBIP32(xpub.compressedPublicKey, xpub.chainCode)),
                     );
                 }
 
@@ -392,7 +392,7 @@ export default function Dashboard() {
                 notifications.show({
                     title: 'Error',
                     color: 'red',
-                    message: 'Please make sure your device is unlocked and the Kaspa app is open',
+                    message: 'Please make sure your device is unlocked and the Cryptix app is open',
                     autoClose: false,
                 });
                 console.error(e);

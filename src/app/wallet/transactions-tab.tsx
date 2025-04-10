@@ -19,8 +19,8 @@ import {
 } from '../../lib/ledger';
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { IMempoolEntry } from '../../lib/kaspa-rpc/kaspa';
-import { sompiToKas } from '../../lib/kaspa-util';
+import { IMempoolEntry } from '../../lib/cryptix-rpc/cryptix';
+import { sompiToCytx } from '../../lib/cryptix-util';
 import { IconReplace } from '@tabler/icons-react';
 import { ISelectedAddress } from './types';
 
@@ -181,7 +181,7 @@ export default function TransactionsTab(props: TransactionsTabProps) {
                             >
                                 Pending
                             </Badge>
-                            <Badge color='red'>-{sompiToKas(Number(sentAmount))}&nbsp;KAS</Badge>
+                            <Badge color='red'>-{sompiToCytx(Number(sentAmount))}&nbsp;CYTX</Badge>
                         </Group>
                     </Group>
                 </Table.Td>
@@ -197,12 +197,12 @@ export default function TransactionsTab(props: TransactionsTabProps) {
                         <Group justify='space-between'>
                             <Text>{row.timestamp}</Text>
                             <Badge color={row.amount <= 0 ? 'red' : 'green'}>
-                                {row.amount}&nbsp;KAS
+                                {row.amount}&nbsp;CYTX
                             </Badge>
                         </Group>
 
                         <Anchor
-                            href={`https://explorer.kaspa.org/txs/${row.transactionId}`}
+                            href={`https://explorer.cryptix.org/txs/${row.transactionId}`}
                             target='_blank'
                             className={styles.transaction}
                             ff={'Roboto Mono,Courier New,Courier,monospace'}

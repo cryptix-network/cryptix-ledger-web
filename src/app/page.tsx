@@ -30,12 +30,12 @@ async function getAppData(navigate, deviceType = 'usb') {
         const transport = await initTransport(deviceType);
         const { name } = await getAppAndVersion(transport);
 
-        if (name == 'Kaspa') {
+        if (name == 'Cryptix') {
             return navigate(`/wallet?deviceType=${deviceType}`, { replace: true });
         } else {
             notifications.show({
                 title: 'Action Required',
-                message: 'Please open the Kaspa app on your device.',
+                message: 'Please open the Cryptix app on your device.',
             });
         }
     } catch (e) {
@@ -63,10 +63,9 @@ async function getAppData(navigate, deviceType = 'usb') {
 }
 
 const WHITELIST = [
-    'kasvault.io',
-    'preview.kasvault.io',
-    'privatepreview.kasvault.io',
-    'kasvault.vercel.app',
+    'ledger.cryptix-network.org',
+    'preview.ledger.cryptix-network.org',
+    'privatepreview.ledger.cryptix-network.org',
 ];
 
 export default function Home() {
@@ -87,7 +86,7 @@ export default function Home() {
             }
         }
 
-        setIsShowDemo(window.location.hostname !== 'kasvault.io');
+        setIsShowDemo(window.location.hostname !== 'cytxvault.io');
     }, []);
 
     const smallStyles = width <= 48 * 16 ? { fontSize: '1rem' } : {};
@@ -121,8 +120,8 @@ export default function Home() {
             <Group className={styles.center}>
                 <Image
                     className={styles.logo}
-                    src='/kasvault-full-stk.svg'
-                    alt='KasVault'
+                    src='/cryptix-icon.png'
+                    alt='CytxVault'
                     width={180}
                     height={180}
                 />

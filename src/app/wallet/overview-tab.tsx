@@ -13,7 +13,7 @@ import {
 import { useViewportSize } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import { useRef, useState, useEffect } from 'react';
-import KaspaQrCode from '../../components/kaspa-qrcode';
+import CryptixQrCode from '../../components/cryptix-qrcode';
 import SendForm from '../../components/send-form';
 import MessageForm from '../../components/message-form';
 import {
@@ -36,9 +36,9 @@ import {
 import { delay } from '../../lib/util';
 
 import styles from './overview-tab.module.css';
-import { sompiToKas } from '../../lib/kaspa-util';
+import { sompiToCytx } from '../../lib/cryptix-util';
 import { ISelectedAddress } from './types';
-import { IMempoolEntry } from '../../lib/kaspa-rpc/kaspa';
+import { IMempoolEntry } from '../../lib/cryptix-rpc/cryptix';
 
 interface OverviewTabProps {
     containerWidth: number;
@@ -163,7 +163,7 @@ export default function OverviewTab(props: OverviewTabProps) {
                 selectedAddress.derivationPath,
             );
 
-            selectedAddress.balance = sompiToKas(Number(addressDetails.balance));
+            selectedAddress.balance = sompiToCytx(Number(addressDetails.balance));
             selectedAddress.utxos = addressDetails.utxos;
 
             if (props.setAddresses) {
@@ -242,7 +242,7 @@ export default function OverviewTab(props: OverviewTabProps) {
                 </Notification>
             </Group>
         ) : (
-            <Text fz='lg'>{selectedAddress.balance} KAS</Text>
+            <Text fz='lg'>{selectedAddress.balance} CYTX</Text>
         );
 
     return (
@@ -304,7 +304,7 @@ export default function OverviewTab(props: OverviewTabProps) {
                             </Tooltip>
                         </Text>
 
-                        <KaspaQrCode value={selectedAddress.address} />
+                        <CryptixQrCode value={selectedAddress.address} />
 
                         <Group gap={'xs'}>{confirmingOrBalanceSection}</Group>
                     </Stack>

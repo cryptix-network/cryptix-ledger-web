@@ -1,23 +1,23 @@
 {
-  "name": "kaspa-wasm",
+  "name": "cryptix-wasm",
   "type": "module",
   "collaborators": [
-    "Kaspa developers"
+    "Cryptix developers"
   ],
-  "description": "KASPA WASM bindings",
+  "description": "CYTXPA WASM bindings",
   "version": "0.15.1",
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kaspanet/rusty-kaspa"
+    "url": "https://github.com/cryptix-network/rusty-cryptix"
   },
   "files": [
-    "kaspa_bg.wasm",
-    "kaspa.js",
-    "kaspa.d.ts"
+    "cryptix_bg.wasm",
+    "cryptix.js",
+    "cryptix.d.ts"
   ],
-  "main": "kaspa.js",
-  "types": "kaspa.d.ts",
+  "main": "cryptix.js",
+  "types": "cryptix.d.ts",
   "sideEffects": [
     "./snippets/*"
   ]

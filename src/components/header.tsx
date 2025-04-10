@@ -7,11 +7,11 @@ export default function Header(props) {
         <Group className={styles.header}>
             <div className={styles.child}>{props.children}</div>
             <div>
-                <a href='https://kaspa.org' target='_blank' rel='noopener noreferrer'>
+                <a href='https://cryptix.org' target='_blank' rel='noopener noreferrer'>
                     <Image
-                        src='/kaspa-icon.svg'
-                        alt='Kaspa Logo'
-                        className={styles.kaspaLogo}
+                        src='/cryptix-icon.ico'
+                        alt='Cryptix Logo'
+                        className={styles.cryptixLogo}
                         width={48}
                         height={48}
                     />
