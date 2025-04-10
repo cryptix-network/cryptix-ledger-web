@@ -162,12 +162,12 @@ export function addressToScriptPublicKey(address: string): string {
     }
 }
 
-export function sompiToCytx(amount: number) {
+export function sompiToCpay(amount: number) {
     const amountStr = '00000000' + amount;
     return Number(amountStr.slice(0, -8) + '.' + amountStr.slice(-8));
 }
 
-export function cytxToSompi(amount: number) {
+export function cpayToSompi(amount: number) {
     const amountStr = String(amount);
     const parts = amountStr.split('.');
 

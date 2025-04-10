@@ -86,7 +86,7 @@ export default function Home() {
             }
         }
 
-        setIsShowDemo(window.location.hostname !== 'cytxvault.io');
+        setIsShowDemo(window.location.hostname !== 'cpayvault.io');
     }, []);
 
     const smallStyles = width <= 48 * 16 ? { fontSize: '1rem' } : {};
@@ -121,7 +121,7 @@ export default function Home() {
                 <Image
                     className={styles.logo}
                     src='/cryptix-icon.png'
-                    alt='CytxVault'
+                    alt='CpayVault'
                     width={180}
                     height={180}
                 />

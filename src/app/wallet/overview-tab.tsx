@@ -36,7 +36,7 @@ import {
 import { delay } from '../../lib/util';
 
 import styles from './overview-tab.module.css';
-import { sompiToCytx } from '../../lib/cryptix-util';
+import { sompiToCpay } from '../../lib/cryptix-util';
 import { ISelectedAddress } from './types';
 import { IMempoolEntry } from '../../lib/cryptix-rpc/cryptix';
 
@@ -163,7 +163,7 @@ export default function OverviewTab(props: OverviewTabProps) {
                 selectedAddress.derivationPath,
             );
 
-            selectedAddress.balance = sompiToCytx(Number(addressDetails.balance));
+            selectedAddress.balance = sompiToCpay(Number(addressDetails.balance));
             selectedAddress.utxos = addressDetails.utxos;
 
             if (props.setAddresses) {
@@ -242,7 +242,7 @@ export default function OverviewTab(props: OverviewTabProps) {
                 </Notification>
             </Group>
         ) : (
-            <Text fz='lg'>{selectedAddress.balance} CYTX</Text>
+            <Text fz='lg'>{selectedAddress.balance} CPAY</Text>
         );
 
     return (

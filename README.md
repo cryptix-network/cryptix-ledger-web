@@ -1,6 +1,6 @@
-# CytxVault
+# CpayVault
 
-CytxVault is a simple frontend interface for your Ledger device.
+CpayVault is a simple frontend interface for your Ledger device.
 
 
 ## Compatible Browsers
@@ -19,13 +19,13 @@ First, run the development server:
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to start using or developing CytxVault locally.
+Open [http://localhost:3000](http://localhost:3000) with your browser to start using or developing CpayVault locally.
 
 ## FAQ
 
-### Are my funds safe with CytxVault?
+### Are my funds safe with CpayVault?
 
-Yes, but to be clear CytxVault itself does not store your Cryptix. Your Cryptix is also not stored in the Ledger device as well. When you send cryptix to the address you generate with CytxVault, it is stored on the blockdag as a UTXO.
+Yes, but to be clear CpayVault itself does not store your Cryptix. Your Cryptix is also not stored in the Ledger device as well. When you send cryptix to the address you generate with CpayVault, it is stored on the blockdag as a UTXO.
 
 
 Copyright - coderofstuff

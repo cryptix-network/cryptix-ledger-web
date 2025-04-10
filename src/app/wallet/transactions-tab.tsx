@@ -20,7 +20,7 @@ import {
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { IMempoolEntry } from '../../lib/cryptix-rpc/cryptix';
-import { sompiToCytx } from '../../lib/cryptix-util';
+import { sompiToCpay } from '../../lib/cryptix-util';
 import { IconReplace } from '@tabler/icons-react';
 import { ISelectedAddress } from './types';
 
@@ -181,7 +181,7 @@ export default function TransactionsTab(props: TransactionsTabProps) {
                             >
                                 Pending
                             </Badge>
-                            <Badge color='red'>-{sompiToCytx(Number(sentAmount))}&nbsp;CYTX</Badge>
+                            <Badge color='red'>-{sompiToCpay(Number(sentAmount))}&nbsp;CPAY</Badge>
                         </Group>
                     </Group>
                 </Table.Td>
@@ -197,7 +197,7 @@ export default function TransactionsTab(props: TransactionsTabProps) {
                         <Group justify='space-between'>
                             <Text>{row.timestamp}</Text>
                             <Badge color={row.amount <= 0 ? 'red' : 'green'}>
-                                {row.amount}&nbsp;CYTX
+                                {row.amount}&nbsp;CPAY
                             </Badge>
                         </Group>
 

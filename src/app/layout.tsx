@@ -9,7 +9,7 @@ import { Notifications } from '@mantine/notifications';
 // const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-    title: 'CytxVault',
+    title: 'CpayVault',
     description: 'The frontend interface for your Ledger device',
 };
 

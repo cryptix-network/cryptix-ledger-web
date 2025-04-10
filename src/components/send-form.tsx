@@ -26,7 +26,7 @@ import {
 } from '../lib/ledger';
 import AddressText from '../components/address-text';
 import { useForm } from '@mantine/form';
-import { cytxToSompi, sompiToCytx, NETWORK_UTXO_LIMIT } from '../lib/cryptix-util';
+import { cpayToSompi, sompiToCpay, NETWORK_UTXO_LIMIT } from '../lib/cryptix-util';
 import { IMempoolEntry } from '../lib/cryptix-rpc';
 // import { IconAlertCircle } from '@tabler/icons-react';
 
@@ -119,11 +119,11 @@ export default function SendForm(props: SendFormProps) {
             form.setValues({
                 sendTo: props.mempoolEntryToReplace.transaction.outputs[0].verboseData
                     .scriptPublicKeyAddress,
-                amount: sompiToCytx(
+                amount: sompiToCpay(
                     Number(props.mempoolEntryToReplace.transaction.outputs[0].value),
                 ),
                 manualFee: true,
-                fee: sompiToCytx(Number(props.mempoolEntryToReplace.fee)),
+                fee: sompiToCpay(Number(props.mempoolEntryToReplace.fee)),
             });
         }
     }, [props.mempoolEntryToReplace]);
@@ -184,13 +184,13 @@ export default function SendForm(props: SendFormProps) {
         } else if (deviceType == 'usb') {
             try {
                 const { tx } = createTransaction(
-                    cytxToSompi(Number(form.values.amount)),
+                    cpayToSompi(Number(form.values.amount)),
                     form.values.sendTo,
                     selectedUtxos,
                     props.addressContext.derivationPath,
                     props.addressContext.address,
                     form.values.includeFeeInAmount,
-                    cytxToSompi(form.values.fee),
+                    cpayToSompi(form.values.fee),
                 );
 
                 const result: SendAmountResult = await sendAmount(
@@ -205,7 +205,7 @@ export default function SendForm(props: SendFormProps) {
 
                 if (e.statusCode == 0xb005 && props.addressContext.utxos.length > 15) {
                     // This is probably a Nano S
-                    const maxCompoundableAmount = sompiToCytx(
+                    const maxCompoundableAmount = sompiToCpay(
                         props.addressContext.utxos.slice(0, 15).reduce((acc, utxo) => {
                             return acc + utxo.amount;
                         }, 0),
@@ -213,7 +213,7 @@ export default function SendForm(props: SendFormProps) {
                     notifications.show({
                         title: 'Error',
                         color: 'red',
-                        message: `You have too many UTXOs to send this amount. Please compound first by sending CYTX to your address. Maximum sendable without compounding (including fee): ${maxCompoundableAmount}`,
+                        message: `You have too many UTXOs to send this amount. Please compound first by sending CPAY to your address. Maximum sendable without compounding (including fee): ${maxCompoundableAmount}`,
                         autoClose: false,
                         loading: false,
                     });
@@ -246,14 +246,14 @@ export default function SendForm(props: SendFormProps) {
                 fee: feeCalcResult,
                 total: utxoTotalAmount,
             } = selectUtxos(
-                cytxToSompi(amount),
+                cpayToSompi(amount),
                 props.addressContext.utxos,
                 includeFeeInAmount,
-                cytxToSompi(requiredFee),
+                cpayToSompi(requiredFee),
             );
 
             if (utxos.length > NETWORK_UTXO_LIMIT) {
-                const maxCompoundableAmount = sompiToCytx(
+                const maxCompoundableAmount = sompiToCpay(
                     utxos.slice(0, NETWORK_UTXO_LIMIT).reduce((acc, utxo) => {
                         return acc + utxo.amount;
                     }, 0),
@@ -261,27 +261,27 @@ export default function SendForm(props: SendFormProps) {
                 notifications.show({
                     title: 'Error',
                     color: 'red',
-                    message: `You have too many UTXOs to send this amount. Please compound first by sending CYTX to your address. Maximum sendable without compounding (including fee): ${maxCompoundableAmount}`,
+                    message: `You have too many UTXOs to send this amount. Please compound first by sending CPAY to your address. Maximum sendable without compounding (including fee): ${maxCompoundableAmount}`,
                     autoClose: false,
                     loading: false,
                 });
                 setCanSendAmount(false);
             } else if (hasEnough) {
-                let changeAmount = utxoTotalAmount - cytxToSompi(amount);
+                let changeAmount = utxoTotalAmount - cpayToSompi(amount);
                 if (!includeFeeInAmount) {
                     changeAmount -= feeCalcResult;
                 }
 
                 let expectedFee = feeCalcResult;
-                // The change is added to the fee if it's less than 0.0001 CYTX
+                // The change is added to the fee if it's less than 0.0001 CPAY
                 console.info('changeAmount', changeAmount);
                 if (changeAmount < 10000) {
                     console.info(`Adding dust change ${changeAmount} sompi to fee`);
                     expectedFee += changeAmount;
                 }
 
-                calculatedFee = sompiToCytx(expectedFee);
-                const afterFeeDisplay = sompiToCytx(cytxToSompi(amount) - expectedFee);
+                calculatedFee = sompiToCpay(expectedFee);
+                const afterFeeDisplay = sompiToCpay(cpayToSompi(amount) - expectedFee);
                 setCanSendAmount(true);
                 setSelectedUtxos(utxos);
                 if (includeFeeInAmount) {
@@ -312,7 +312,7 @@ export default function SendForm(props: SendFormProps) {
         }, 0);
 
         form.setValues({
-            amount: sompiToCytx(total),
+            amount: sompiToCpay(total),
             includeFeeInAmount: true,
         });
     };
@@ -329,7 +329,7 @@ export default function SendForm(props: SendFormProps) {
                 />
 
                 <NumberInput
-                    label='Amount in CYTX'
+                    label='Amount in CPAY'
                     placeholder='0'
                     min={0}
                     decimalScale={8}
@@ -421,7 +421,7 @@ export default function SendForm(props: SendFormProps) {
                     </Anchor>
 
                     <Text component='h2' fw={600}>
-                        {form.values.sentAmount} CYTX
+                        {form.values.sentAmount} CPAY
                     </Text>
 
                     <Text>sent to</Text>

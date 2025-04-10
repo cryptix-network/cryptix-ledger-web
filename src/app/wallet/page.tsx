@@ -22,7 +22,7 @@ import { delay } from '../../lib/util';
 import { useElementSize } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import SettingsStore from '../../lib/settings-store';
-import { cytxToSompi, sompiToCytx, NETWORK_UTXO_LIMIT } from '../../lib/cryptix-util';
+import { cpayToSompi, sompiToCpay, NETWORK_UTXO_LIMIT } from '../../lib/cryptix-util';
 import { IMempoolEntry } from '../../lib/cryptix-rpc/cryptix';
 import { IAddressData, ISelectedAddress } from './types';
 
@@ -43,7 +43,7 @@ function loadAddressDetails(rawAddress) {
     const fetchAddressPromise = fetchAddressDetails(rawAddress.address, rawAddress.derivationPath);
 
     return fetchAddressPromise.then((addressDetails) => {
-        rawAddress.balance = sompiToCytx(Number(addressDetails.balance));
+        rawAddress.balance = sompiToCpay(Number(addressDetails.balance));
         rawAddress.utxos = addressDetails.utxos;
         // rawAddress.txCount = addressDetails.txCount;
         rawAddress.loading = false;
@@ -221,14 +221,14 @@ async function demoLoadAddress(bip32, setAddresses, setRawAddresses, lastReceive
         currAddress.utxos.push({
             prevTxId: 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
             outpointIndex: 0,
-            amount: cytxToSompi(balance - (NETWORK_UTXO_LIMIT - 1)),
+            amount: cpayToSompi(balance - (NETWORK_UTXO_LIMIT - 1)),
         });
 
         for (let j = 0; j < NETWORK_UTXO_LIMIT - 1; j++) {
             currAddress.utxos.push({
                 prevTxId: 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
                 outpointIndex: 0,
-                amount: cytxToSompi(1),
+                amount: cpayToSompi(1),
             });
         }
 

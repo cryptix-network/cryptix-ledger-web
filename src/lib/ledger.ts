@@ -414,7 +414,7 @@ export function createTransaction(
     console.info(utxos);
 
     if (!hasEnough) {
-        // Show error we don't have enough CYTX
+        // Show error we don't have enough CPAY
         throw new Error('Amount too high.');
     }
 

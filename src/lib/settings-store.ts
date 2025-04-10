@@ -2,7 +2,7 @@ class SettingsStore {
     storageKey: string;
     settings: Object;
     constructor(storageKey: string) {
-        this.storageKey = `cytxvault:${storageKey}`;
+        this.storageKey = `cpayvault:${storageKey}`;
 
         const storedSettings: string = localStorage.getItem(this.storageKey);
 
